@@ -8,6 +8,7 @@ import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.graphics.Color;
+import android.util.Log;
 import android.view.View;
 import android.view.Window;
 import android.widget.Button;
@@ -142,19 +143,38 @@ public class MainActivity extends AppCompatActivity
 
     private void writeDB(String info) throws Exception {
         ContentValues values = new ContentValues();
-        values.put("id", "0");
+        //values.put("id", "0");
         values.put("info", info);
-        int colNum = db.update(DB_TABLE, values, null, null);
-        if (colNum == 0) db.insert(DB_TABLE, "", values);
+        //int colNum = db.update(DB_TABLE, values, null, null);
+        //if (colNum == 0) {
+            db.insert(DB_TABLE, null, values);
+        //}
     }
 
     private String readDB() throws Exception {
+
+        /*
         Cursor c = db.query(DB_TABLE, new String[]{"id", "info"},
                 "id='0'", null, null, null, null);
         if (c.getCount() == 0) throw new Exception();
         c.moveToFirst();
         String str = c.getString(1);
         c.close();
+        */
+
+        //test start
+        Cursor c = db.query(DB_TABLE, new String[]{"id", "info"},
+                null, null, null, null, null);
+        if (c.moveToFirst()) {
+            do {
+                //Log.v("sqltest", Integer.toString(c.getInt(0)));
+                Log.v("sqltest", c.getString(1));
+            } while (c.moveToNext());
+        }
+        c.close();
+        String str = "";
+        //test end
+
         return str;
     }
 
@@ -166,7 +186,7 @@ public class MainActivity extends AppCompatActivity
         @Override
         public void onCreate(SQLiteDatabase db) {
             db.execSQL("create table if not exists "+
-                    DB_TABLE+"(id text primary key,info text)");
+                    DB_TABLE+"(id integer primary key autoincrement,info text)");
         }
 
         @Override
