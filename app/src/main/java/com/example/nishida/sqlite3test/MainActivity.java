@@ -37,10 +37,13 @@ public class MainActivity extends AppCompatActivity
     private SQLiteDatabase db;
 
     private ArrayList<AdapterItem> items;
+    private ArrayList<AdapterItem> dbitems;
 
     @Override
     public void onCreate(Bundle bundle) {
         super.onCreate(bundle);
+        setContentView(R.layout.activity_main);
+        /*
         requestWindowFeature(Window.FEATURE_NO_TITLE);
 
         LinearLayout layout = new LinearLayout(this);
@@ -69,6 +72,7 @@ public class MainActivity extends AppCompatActivity
         listView.setScrollingCacheEnabled(false);
         listView.setAdapter(new MyAdapter());
         layout.addView(listView);
+        */
     }
 
     private class MyAdapter extends BaseAdapter {
@@ -163,12 +167,17 @@ public class MainActivity extends AppCompatActivity
         */
 
         //test start
+        dbitems = new ArrayList<AdapterItem>();
         Cursor c = db.query(DB_TABLE, new String[]{"id", "info"},
                 null, null, null, null, null);
         if (c.moveToFirst()) {
             do {
-                //Log.v("sqltest", Integer.toString(c.getInt(0)));
+                Log.v("sqltest", Integer.toString(c.getInt(0)));
                 Log.v("sqltest", c.getString(1));
+                AdapterItem item = new AdapterItem();
+                item.id = Integer.toString(c.getInt(0));
+                item.text = c.getString(1);
+                dbitems.add(item);
             } while (c.moveToNext());
         }
         c.close();
