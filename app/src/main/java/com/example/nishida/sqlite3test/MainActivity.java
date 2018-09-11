@@ -14,6 +14,14 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.LinearLayout;
 
+import android.view.Gravity;
+import android.view.ViewGroup;
+import android.widget.BaseAdapter;
+import android.widget.ListView;
+import android.widget.TextView;
+
+import java.util.ArrayList;
+
 public class MainActivity extends AppCompatActivity
         implements View.OnClickListener {
     private final static int WC = LinearLayout.LayoutParams.WRAP_CONTENT;
@@ -26,6 +34,8 @@ public class MainActivity extends AppCompatActivity
 
     private EditText       editText;
     private SQLiteDatabase db;
+
+    private ArrayList<AdapterItem> items;
 
     @Override
     public void onCreate(Bundle bundle) {
@@ -47,6 +57,58 @@ public class MainActivity extends AppCompatActivity
 
         DBHelper dbHelper = new DBHelper(this);
         db = dbHelper.getWritableDatabase();
+
+        items = new ArrayList<AdapterItem>();
+        for (int i = 0; i < 30; i++) {
+            AdapterItem item = new AdapterItem();
+            item.text = "項目"+(i+1);
+            items.add(item);
+        }
+        ListView listView = new ListView(this);
+        listView.setScrollingCacheEnabled(false);
+        listView.setAdapter(new MyAdapter());
+        layout.addView(listView);
+    }
+
+    private class MyAdapter extends BaseAdapter {
+        @Override
+        public int getCount() {
+            return items.size();
+        }
+
+        @Override
+        public AdapterItem getItem(int pos) {
+            return items.get(pos);
+        }
+
+        @Override
+        public long getItemId(int pos) {
+            return pos;
+        }
+
+        @Override
+        public View getView(int pos, View view, ViewGroup parent) {
+            Context context = MainActivity.this;
+            AdapterItem item = items.get(pos);
+
+            if (view == null) {
+                LinearLayout layout = new LinearLayout(context);
+                layout.setBackgroundColor(Color.WHITE);
+                layout.setPadding(10, 10, 10, 10);
+                layout.setGravity(Gravity.CENTER_VERTICAL);
+                view = layout;
+
+                TextView textView = new TextView(context);
+                textView.setTag("text");
+                textView.setTextColor(Color.BLACK);
+                textView.setPadding(10, 20, 10, 20);
+                layout.addView(textView);
+            }
+
+            TextView textView = (TextView)view.findViewWithTag("text");
+            textView.setText(item.text);
+            return view;
+        }
     }
 
     private Button makeButton(String text, String tag) {
