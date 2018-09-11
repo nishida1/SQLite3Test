@@ -23,10 +23,12 @@ import android.widget.TextView;
 
 import java.util.ArrayList;
 
-public class MainActivity extends AppCompatActivity
-        implements View.OnClickListener {
+public class MainActivity extends AppCompatActivity{
+    /*
     private final static int WC = LinearLayout.LayoutParams.WRAP_CONTENT;
     private final static int MP = LinearLayout.LayoutParams.MATCH_PARENT;
+    */
+
     private final static String TAG_WRITE  = "write";
     private final static String TAG_READ   = "read";
     private final static String DB_NAME    = "test.db";
@@ -76,7 +78,7 @@ public class MainActivity extends AppCompatActivity
         listView.setAdapter(new MyAdapter());
         layout.addView(listView);
         */
-        
+
         ListView lv = (ListView)findViewById(R.id.listItems);
         lv.setAdapter(new MyAdapter());
 
@@ -123,6 +125,48 @@ public class MainActivity extends AppCompatActivity
         }
     }
 
+    private class MyDbAdapter extends BaseAdapter {
+        @Override
+        public int getCount() {
+            return dbitems.size();
+        }
+
+        @Override
+        public AdapterItem getItem(int pos) {
+            return dbitems.get(pos);
+        }
+
+        @Override
+        public long getItemId(int pos) {
+            return pos;
+        }
+
+        @Override
+        public View getView(int pos, View view, ViewGroup parent) {
+            Context context = MainActivity.this;
+            AdapterItem item = dbitems.get(pos);
+
+            if (view == null) {
+                LinearLayout layout = new LinearLayout(context);
+                layout.setBackgroundColor(Color.WHITE);
+                layout.setPadding(10, 10, 10, 10);
+                layout.setGravity(Gravity.CENTER_VERTICAL);
+                view = layout;
+
+                TextView textView = new TextView(context);
+                textView.setTag("text");
+                textView.setTextColor(Color.BLACK);
+                textView.setPadding(10, 20, 10, 20);
+                layout.addView(textView);
+            }
+
+            TextView textView = (TextView)view.findViewWithTag("text");
+            textView.setText(item.text);
+            return view;
+        }
+    }
+
+    /*
     private Button makeButton(String text, String tag) {
         Button button = new Button(this);
         button.setText(text);
@@ -131,26 +175,30 @@ public class MainActivity extends AppCompatActivity
         button.setLayoutParams(new LinearLayout.LayoutParams(WC, WC));
         return button;
     }
+    */
 
-    public void onClick(View v) {
-        Log.v("sqltest", "onClick test");
-        String tag = (String)v.getTag();
-        if (TAG_WRITE.equals(tag)) {
-            try {
-                String str = editText.getText().toString();
-                writeDB(str);
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
+    public void onClickWrite(View v) {
+
+        Log.v("sqltest", "onClickWritetest");
+        try {
+            String str = editText.getText().toString();
+            writeDB(str);
+        } catch (Exception e) {
+            e.printStackTrace();
         }
-        else if (TAG_READ.equals(tag)) {
-            try {
-                String str = readDB();
-                editText.setText(str);
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
+
+    }
+
+    public void onClickRead(View v) {
+
+        Log.v("sqltest", "onClickReadtest");
+        try {
+            String str = readDB();
+            editText.setText(str);
+        } catch (Exception e) {
+            e.printStackTrace();
         }
+
     }
 
     private void writeDB(String info) throws Exception {
@@ -189,6 +237,8 @@ public class MainActivity extends AppCompatActivity
             } while (c.moveToNext());
         }
         c.close();
+        ListView lv = (ListView)findViewById(R.id.listItems);
+        lv.setAdapter(new MyDbAdapter());
         String str = "";
         //test end
 
