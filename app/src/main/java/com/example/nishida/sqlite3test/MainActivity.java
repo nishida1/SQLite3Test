@@ -58,6 +58,7 @@ public class MainActivity extends AppCompatActivity
 
         layout.addView(makeButton("書き込み", TAG_WRITE));
         layout.addView(makeButton("読み込み", TAG_READ));
+        */
 
         DBHelper dbHelper = new DBHelper(this);
         db = dbHelper.getWritableDatabase();
@@ -68,11 +69,17 @@ public class MainActivity extends AppCompatActivity
             item.text = "項目"+(i+1);
             items.add(item);
         }
+
+        /*
         ListView listView = new ListView(this);
         listView.setScrollingCacheEnabled(false);
         listView.setAdapter(new MyAdapter());
         layout.addView(listView);
         */
+        
+        ListView lv = (ListView)findViewById(R.id.listItems);
+        lv.setAdapter(new MyAdapter());
+
     }
 
     private class MyAdapter extends BaseAdapter {
@@ -126,6 +133,7 @@ public class MainActivity extends AppCompatActivity
     }
 
     public void onClick(View v) {
+        Log.v("sqltest", "onClick test");
         String tag = (String)v.getTag();
         if (TAG_WRITE.equals(tag)) {
             try {
