@@ -2,11 +2,9 @@ package com.example.nishida.sqlite3test;
 
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
-import android.content.Context;
 import android.content.ContentValues;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
-import android.database.sqlite.SQLiteOpenHelper;
 import android.util.Log;
 import android.view.View;
 import android.widget.ArrayAdapter;
@@ -15,10 +13,6 @@ import android.widget.ListView;
 import java.util.ArrayList;
 
 public class MainActivity extends AppCompatActivity{
-
-    private final static String DB_NAME    = "test.db";
-    private final static String DB_TABLE   = "test";
-    private final static int    DB_VERSION = 1;
 
     private EditText       editText;
     private SQLiteDatabase db;
@@ -73,12 +67,12 @@ public class MainActivity extends AppCompatActivity{
     private void writeDB(String info) throws Exception {
         ContentValues values = new ContentValues();
         values.put("info", info);
-        db.insert(DB_TABLE, null, values);
+        db.insert(Common.DB_TABLE, null, values);
     }
 
     private void readDB() throws Exception {
         dbitems = new ArrayList<AdapterItem>();
-        Cursor c = db.query(DB_TABLE, new String[]{"id", "info"},
+        Cursor c = db.query(Common.DB_TABLE, new String[]{"id", "info"},
                 null, null, null, null, "id desc");
         if (c.moveToFirst()) {
             do {
@@ -93,22 +87,4 @@ public class MainActivity extends AppCompatActivity{
         c.close();
     }
 
-    private static class DBHelper extends SQLiteOpenHelper {
-        public DBHelper(Context context) {
-            super(context, DB_NAME, null, DB_VERSION);
-        }
-
-        @Override
-        public void onCreate(SQLiteDatabase db) {
-            db.execSQL("create table if not exists "+
-                    DB_TABLE+"(id integer primary key autoincrement,info text)");
-        }
-
-        @Override
-        public void onUpgrade(SQLiteDatabase db,
-                              int oldVersion, int newVersion) {
-            db.execSQL("drop table if exists "+DB_TABLE);
-            onCreate(db);
-        }
-    }
 }
