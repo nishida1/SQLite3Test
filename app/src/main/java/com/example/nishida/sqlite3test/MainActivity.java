@@ -29,7 +29,7 @@ public class MainActivity extends AppCompatActivity{
         db = dbHelper.getWritableDatabase();
 
         try{
-            readDB();
+            dbitems = DBUtil.readDB(dbitems, db);
         } catch (Exception e){
             e.printStackTrace();
         }
@@ -56,35 +56,14 @@ public class MainActivity extends AppCompatActivity{
     public void onClickWrite(View v) {
         try {
             editText = findViewById(R.id.editText);
-            writeDB(editText.getText().toString());
-            readDB();
+            DBUtil.writeDB(editText.getText().toString(), db);
+            dbitems = DBUtil.readDB(dbitems, db);
             setList();
         } catch (Exception e) {
             e.printStackTrace();
         }
     }
 
-    private void writeDB(String info) throws Exception {
-        ContentValues values = new ContentValues();
-        values.put("info", info);
-        db.insert(Common.DB_TABLE, null, values);
-    }
 
-    private void readDB() throws Exception {
-        dbitems = new ArrayList<AdapterItem>();
-        Cursor c = db.query(Common.DB_TABLE, new String[]{"id", "info"},
-                null, null, null, null, "id desc");
-        if (c.moveToFirst()) {
-            do {
-                Log.v("sqltest", Integer.toString(c.getInt(0)));
-                Log.v("sqltest", c.getString(1));
-                AdapterItem item = new AdapterItem();
-                item.id = Integer.toString(c.getInt(0));
-                item.text = c.getString(1);
-                dbitems.add(item);
-            } while (c.moveToNext());
-        }
-        c.close();
-    }
 
 }
