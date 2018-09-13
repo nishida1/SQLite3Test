@@ -65,12 +65,14 @@ public class MainActivity extends AppCompatActivity{
         DBHelper dbHelper = new DBHelper(this);
         db = dbHelper.getWritableDatabase();
 
+        /*
         items = new ArrayList<AdapterItem>();
         for (int i = 0; i < 30; i++) {
             AdapterItem item = new AdapterItem();
             item.text = "項目"+(i+1);
             items.add(item);
         }
+        */
 
         /*
         ListView listView = new ListView(this);
@@ -79,8 +81,15 @@ public class MainActivity extends AppCompatActivity{
         layout.addView(listView);
         */
 
+        try{
+            readDB();
+        } catch (Exception e){
+            e.printStackTrace();
+        }
+
         ListView lv = (ListView)findViewById(R.id.listItems);
-        lv.setAdapter(new MyAdapter());
+        //lv.setAdapter(new MyAdapter());
+        lv.setAdapter(new MyDbAdapter());
 
     }
 
@@ -148,7 +157,7 @@ public class MainActivity extends AppCompatActivity{
 
             if (view == null) {
                 LinearLayout layout = new LinearLayout(context);
-                layout.setBackgroundColor(Color.WHITE);
+                //layout.setBackgroundColor(Color.WHITE);
                 layout.setPadding(10, 10, 10, 10);
                 layout.setGravity(Gravity.CENTER_VERTICAL);
                 view = layout;
@@ -181,8 +190,9 @@ public class MainActivity extends AppCompatActivity{
 
         Log.v("sqltest", "onClickWritetest");
         try {
-            String str = editText.getText().toString();
-            writeDB(str);
+            editText = findViewById(R.id.editText);
+            writeDB(editText.getText().toString());
+            readDB();
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -193,8 +203,9 @@ public class MainActivity extends AppCompatActivity{
 
         Log.v("sqltest", "onClickReadtest");
         try {
-            String str = readDB();
-            editText.setText(str);
+            readDB();
+            //String str = readDB();
+            //editText.setText(str);
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -225,7 +236,7 @@ public class MainActivity extends AppCompatActivity{
         //test start
         dbitems = new ArrayList<AdapterItem>();
         Cursor c = db.query(DB_TABLE, new String[]{"id", "info"},
-                null, null, null, null, null);
+                null, null, null, null, "id desc");
         if (c.moveToFirst()) {
             do {
                 Log.v("sqltest", Integer.toString(c.getInt(0)));
