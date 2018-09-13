@@ -7,20 +7,14 @@ import android.content.ContentValues;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
-import android.graphics.Color;
 import android.util.Log;
 import android.view.View;
+import android.widget.ArrayAdapter;
 import android.widget.EditText;
-import android.widget.LinearLayout;
-import android.view.Gravity;
-import android.view.ViewGroup;
-import android.widget.BaseAdapter;
 import android.widget.ListView;
-import android.widget.TextView;
 import java.util.ArrayList;
 
 public class MainActivity extends AppCompatActivity{
-
 
     private final static String DB_NAME    = "test.db";
     private final static String DB_TABLE   = "test";
@@ -30,6 +24,7 @@ public class MainActivity extends AppCompatActivity{
     private SQLiteDatabase db;
 
     private ArrayList<AdapterItem> dbitems;
+    ArrayAdapter<String> adapter;
 
     @Override
     public void onCreate(Bundle bundle) {
@@ -45,49 +40,23 @@ public class MainActivity extends AppCompatActivity{
             e.printStackTrace();
         }
 
-        ListView lv = (ListView)findViewById(R.id.listItems);
-        lv.setAdapter(new MyDbAdapter());
-
+        setList();
     }
 
-    private class MyDbAdapter extends BaseAdapter {
-        @Override
-        public int getCount() {
-            return dbitems.size();
+    private void setList() {
+        ListView lv = (ListView)findViewById(R.id.listItems);
+        ArrayList<String> arrayList = new ArrayList<>();
+
+        for (int i = 0; i < dbitems.size(); i++){
+            AdapterItem item = dbitems.get(i);
+            arrayList.add(item.text);
         }
 
-        @Override
-        public AdapterItem getItem(int pos) {
-            return dbitems.get(pos);
-        }
-
-        @Override
-        public long getItemId(int pos) {
-            return pos;
-        }
-
-        @Override
-        public View getView(int pos, View view, ViewGroup parent) {
-            Context context = MainActivity.this;
-            AdapterItem item = dbitems.get(pos);
-
-            if (view == null) {
-                LinearLayout layout = new LinearLayout(context);
-                layout.setPadding(10, 10, 10, 10);
-                layout.setGravity(Gravity.CENTER_VERTICAL);
-                view = layout;
-
-                TextView textView = new TextView(context);
-                textView.setTag("text");
-                textView.setTextColor(Color.BLACK);
-                textView.setPadding(10, 20, 10, 20);
-                layout.addView(textView);
-            }
-
-            TextView textView = (TextView)view.findViewWithTag("text");
-            textView.setText(item.text);
-            return view;
-        }
+        adapter = new ArrayAdapter<>(
+                MainActivity.this,
+                android.R.layout.simple_list_item_1,
+                arrayList);
+        lv.setAdapter(adapter);
     }
 
     public void onClickWrite(View v) {
@@ -95,6 +64,7 @@ public class MainActivity extends AppCompatActivity{
             editText = findViewById(R.id.editText);
             writeDB(editText.getText().toString());
             readDB();
+            setList();
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -121,8 +91,6 @@ public class MainActivity extends AppCompatActivity{
             } while (c.moveToNext());
         }
         c.close();
-        ListView lv = (ListView)findViewById(R.id.listItems);
-        lv.setAdapter(new MyDbAdapter());
     }
 
     private static class DBHelper extends SQLiteOpenHelper {
